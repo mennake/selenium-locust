@@ -52,11 +52,16 @@ try:
     password_field.send_keys(password)
     password_field.send_keys(Keys.RETURN)
 
+    # Wait for the stay signed in button to be present and click "No"
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "idBtn_Back")))
+    stay_signed_in_button = driver.find_element(By.ID, "idBtn_Back")
+    stay_signed_in_button.click()
+
     # Handle additional steps if needed (e.g., MFA, consent screen)
     time.sleep(10)  # Adjust the sleep time as needed
 
     # Verify login was successful by checking for a known element on the landing page
-    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "displayName")))
+    # WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "displayName")))
 
     # Extract cookies and save to a file
     cookies = driver.get_cookies()
