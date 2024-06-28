@@ -27,15 +27,14 @@ try:
     cookies = []
 
     # Open the Microsoft SSO login page
-    # replace the below with you SSO login URL
     driver.get("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=4765445b-32c6-49b0-83e6-1d93765276ca&redirect_uri=https%3A%2F%2Fwww.office.com%2Flandingv2&response_type=code%20id_token&scope=openid%20profile%20https%3A%2F%2Fwww.office.com%2Fv2%2FOfficeHome.All&response_mode=form_post&nonce=638545153408414506.MzE3ZTY3YjktYjgwZC00OGEwLTg4ZWMtZWIyMGE4MmM5ZWEzODFhMTkzMmQtOWI3My00OTVlLTg0ZWItN2VmN2EyOWJiNzA2&ui_locales=en-US&mkt=en-US&client-request-id=11777e48-7be8-4bcf-bdee-bc27607ea79c&state=ujzzvIz73cBqlN7ax75pYVU-OJPcGptRfxIzXaO3mBA1_2Y-HlIScvlQANAHoqDacK8rWgJnH0YvOZvOdvUod5lfJcHDUhki5nIUAxWE9Jm60go933jIQaf9fH71dHkIPX0qclMwF05oWOKkR2DT7oDstLxLdBA49FaUjflCUirnKuQYmc1F5PIdEjHT0WYXeALtKhxJr_kmBtvAZcCfCdu2KYHtF07L2YeggUXJjc7GppSvMw9YVr_3xWqvScctGJ0ZC3jIu-ADfzfPzjhkDA")
 
     # Wait for the page to load completely
     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
 
-    # Open a new tab using the keyboard shortcut (Cmd + T on macOS)
+    # Open a new tab
     body = driver.find_element(By.TAG_NAME, 'body')
-    body.send_keys(Keys.COMMAND + 't')
+    body.send_keys(Keys.CONTROL + 't')  # Use Keys.COMMAND on macOS if needed
 
     # Switch to the new tab
     driver.switch_to.window(driver.window_handles[-1])
@@ -57,8 +56,7 @@ try:
     stay_signed_in_button = driver.find_element(By.ID, "idBtn_Back")
     stay_signed_in_button.click()
 
-    # Handle additional steps if needed (e.g., MFA, consent screen)
-    time.sleep(10)  # Adjust the sleep time as needed
+    time.sleep(10)
 
     # Verify login was successful by checking for a known element on the landing page
     # WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "displayName")))
@@ -73,9 +71,14 @@ try:
     logger.info(f"Logged in as: {username}")
     logger.info(f"Cookies: {cookies}")
 
-finally:
-    # Close the browser
-    driver.quit()
+    # Navigate to a new URL instead of closing the browser
+    driver.get("https://bid-uat.marshall.usc.edu")
 
-# Print the cookies (for demonstration purposes)
-print(cookies)
+except Exception as e:
+    logger.error(f"An error occurred: {e}")
+
+# Keep the script running to keep the browser open
+input("Press Enter to exit and close the browser...")
+
+# Optionally, close the browser when done
+# driver.quit()
