@@ -1,5 +1,7 @@
 import json
 import logging
+import random
+import os
 from locust import HttpUser, between, task
 
 # Configure logging
@@ -13,15 +15,19 @@ class WebsiteUser(HttpUser):
     wait_time = between(1, 5)
     host = "https://bid-uat.marshall.usc.edu"
 
+    # on_start method is called for each simulated user
     def on_start(self):
         global login_counter
 
-        # Load cookies and username from file
-        with open('cookies.json', 'r') as f:
+        # List all cookie files in the cookies directory
+        cookie_files = [f for f in os.listdir('cookies') if f.startswith('cookies_') and f.endswith('.json')]
+
+        # Randomly select one of the cookie files
+        selected_file = random.choice(cookie_files)
+
+        # Load cookies and username from the selected file
+        with open(os.path.join('cookies', selected_file), 'r') as f:
             data = json.load(f)
-        
-        # logger.info(f"Data type: {type(data)}")
-        # logger.info(f"Data content: {data}")
 
         if isinstance(data, dict):
             username = data['username']
@@ -31,11 +37,15 @@ class WebsiteUser(HttpUser):
             for cookie in cookies:
                 self.client.cookies.set(cookie['name'], cookie['value'], domain=cookie.get('domain', ''), path=cookie.get('path', '/'))
 
-             # Increment the login counter
+            # Log each cookie name and value
+            for cookie in cookies:
+                logger.info(f"Cookie name: {cookie['name']} - Value: {cookie['value']}")
+
+            # Increment the login counter to validate multiple logins
             login_counter += 1
             
             # Log the username and login count for testing
-            logger.info(f"Loaded cookies for user {username}. This is login number {login_counter}. Logging into {self.host}")
+            logger.info(f"Loaded cookies for user {username} from {selected_file}. This is login number {login_counter}. Logging into {self.host}")
 
     @task
     def index(self):
