@@ -14,8 +14,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # User credentials
-username = 'stauffer.test@marshall.usc.edu'
-password = ']Y1kBC]2GmfjCmPh'
+username = 'me@mexample.com'
+password = 'mypassword'
 
 # Number of logins
 login_attempts = 50
